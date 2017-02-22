@@ -64,7 +64,7 @@ sudo service rabbitmq-server restart
 
 For debugging purposes, run:
 
- `./manage.py runserver -d
+ `./manage.py runserver -d`
 
 The Website will start serving requests on: http://127.0.0.1:3001/
 
