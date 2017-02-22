@@ -1,0 +1,7 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+	<p>Dear {{user.get_name()}},</p>
+	<p>To complete registration your account must be activated.</p>
+	{{ button(request.url_root ~ "activate/" ~ user.activation_code, "Activate Your Account") }}
+{% endblock %}

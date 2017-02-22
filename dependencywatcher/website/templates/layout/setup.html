@@ -1,0 +1,58 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Setup{% endblock %}
+{% block description %}Configure DependencyWatcher service{% endblock %}
+
+{% block content %}
+<div class="container" role="main">
+	<div class="page-title">
+		<h1>Setup</h1>
+	</div>
+	<div class="page-content">
+		<div class="col-md-3 profile-sidebar divider-vertical-r">
+			<ul class="nav nav-stacked">
+				<li class="nav-header">General</li>
+				<li {% if request.path==url_for("setup_website") %}class="active"{% endif %}>
+					<a href="{{url_for("setup_website")}}">Website</a>
+				</li>
+				<li {% if request.path==url_for("setup_email") %}class="active"{% endif %}>
+					<a href="{{url_for("setup_email")}}">Email</a>
+				</li>
+				<li class="nav-divider"></li>
+				<li class="nav-header">Integrations</li>
+				<li {% if request.path==url_for("setup_ldap") %}class="active"{% endif %}>
+					<a href="{{url_for("setup_ldap")}}">LDAP</a>
+				</li>
+				<li {% if request.path==url_for("setup_github") %}class="active"{% endif %}>
+					<a href="{{url_for("setup_github")}}">GitHub</a>
+				</li>
+				<li {% if request.path==url_for("setup_bitbucket") %}class="active"{% endif %}>
+					<a href="{{url_for("setup_bitbucket")}}">BitBucket</a>
+				</li>
+				<li {% if request.path==url_for("setup_mailchimp") %}class="active"{% endif %}>
+					<a href="{{url_for("setup_mailchimp")}}">MailChimp</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="col-md-9">
+			<div style="padding: 10px;">
+				{% include "layout/alerts.html" %}
+			</div>
+
+			<div style="padding: 15px 0px;">
+				<form class="form-horizontal" role="form" method="POST" accept-charset="UTF-8" enctype="multipart/form-data">
+					{{ form.csrf_token if form }}
+					<fieldset>
+						{% block setupcontent %}
+						{% endblock %}
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+

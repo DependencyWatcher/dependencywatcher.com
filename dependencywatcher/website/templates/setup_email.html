@@ -1,0 +1,58 @@
+{% extends "layout/setup.html" %}
+
+{% block setupcontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-envelope-o"></i>&nbsp;&nbsp;Email</h5>
+	<div class="form-group" style="padding:20px 0;">
+		<div class="col-md-12">
+			Configure SMTP settings used for delivering alerts and notifications to users.
+		</div>
+	</div>
+
+	<div class="form-group {% if form.smtp_server.errors %}has-error{% endif %}">
+		<label class="col-md-4 required control-label" for="smtp_server">SMTP Server</label>
+		<div class="col-md-8">
+			<input class="form-control" name="smtp_server" type="text" required
+				value="{{ form.smtp_server.data or config().smtp_server or "" }}"></input>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-md-4 control-label" for="smtp_use_ssl">SSL</label>
+		<div class="col-md-8 btn-group btn-toggle" style="padding-top:5px;padding-bottom:5px;"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox" onclick="return false;">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox" onclick="return false;">OFF</button>
+		</div>
+		<input type="checkbox" name="smtp_use_ssl" class="hidden" {% if config().smtp_use_ssl %}checked{% endif %} />
+	</div>
+	<div class="form-group {% if form.smtp_username.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="smtp_username">Username</label>
+		<div class="col-md-8">
+			<input class="form-control" name="smtp_username" type="text" 
+				value="{{ form.smtp_username.data or config().smtp_username or "" }}"></input>
+		</div>
+	</div>
+	<div class="form-group {% if form.smtp_password.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="smtp_password">Password</label>
+		<div class="col-md-8">
+			<input class="form-control" name="smtp_password" type="password" 
+				value="{{ form.smtp_password.data or config().smtp_password or "" }}"></input>
+		</div>
+	</div>
+	<div class="form-group {% if form.smtp_from_addr.errors %}has-error{% endif %}">
+		<label class="col-md-4 required control-label" for="smtp_from_addr">Default Sender</label>
+		<div class="col-md-8">
+			<input class="form-control" name="smtp_from_addr" type="text" required
+				value="{{ form.smtp_from_addr.data or config().smtp_from_addr or "" }}"></input>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-8">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+

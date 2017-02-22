@@ -1,0 +1,107 @@
+{% extends "layout/dashboard.html" %}
+
+{% block title %}Project Dependencies{% endblock %}
+{% block description %}This page shows all dependencies found in your project{% endblock %}
+
+{% block navitem %}
+<li class="active"><a href="javascript:void(0);">{{repo.url}}</a></li>
+{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+    <div class="page-title col-xs-6">Project Dependencies</div>
+    <form action="{{url_for(request.endpoint, url=request.view_args["url"])}}" id="search-form" role="search" class="col-xs-5 pull-right" style="padding-top:20px;display:table;">
+        <div style="display:table-cell;">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" placeholder="Search" name="q"></input>
+                <input type="hidden" name="old_v"></input>
+                <div class="input-group-btn">
+                    <button class="btn btn-default btn-sm" type="submit" title="Refresh results"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group" style="display:table-cell;padding-left:10px;">
+            <button id="filter-btn" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Filter results">
+                Filter&nbsp;<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right arrow" role="menu">
+                <li><a id="old-v-btn" href="javascript:void(0);">Show new versions only</a></li>
+            </ul>
+        </div>
+    </form>
+</div>
+<div class="row">
+    <div class="repo-shield">
+        <img src="{{url_for("repository_shield", url=repo.url)}}" />
+    </div>
+</div>
+<div class="deps-list">
+    {% if request.args.get("q") %}
+    <p>Showing results for: <b>{{request.args.get("q")}}</b></p>
+    {% endif %}
+    {% if deps.items|length == 0 %}
+    <div style="padding-top:60px;text-align:center;">
+        No dependencies found!
+    </div>
+    {% else %}
+    {% for d in deps.items %}
+    <div class="deps-item">
+        <div class="row">
+            <div class="deps-name col-xs-9">
+                <div class="deps-title" style="line-height:16px;">
+                    <img src="http://www.google.com/s2/favicons?domain={{ urlsplit(d.dependency.url).netloc if d.dependency.url else "opensource.org" }}"
+                         style="float:left;" width="16" height="16" />
+
+                    <a href="{{ d.dependency.url if d.dependency.url else feeling_lucky_url(d.dependency.name) }}"
+                       title="Visit homepage" class="deps-link" target="_blank">{{ d.dependency.name }}</a>
+                </div>
+                <div class="deps-description">{{ d.dependency.description if d.dependency.description }}</div>
+
+                {% if d.dependency.version or d.dependency.license %}
+                <div class="deps-infos">
+                    {% if d.dependency.version and d.dependency.version != d.version %}
+                    <span class="deps-info">Released version: <span class="deps-rel-version">{{ d.dependency.version }}</span></span>
+                    {% endif %}
+                    {% if d.dependency.license %}
+                    <span class="deps-info">Licensed under: <span class="deps-lic-text">{{ d.dependency.license.name }}</span></span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="deps-actions">
+                    {% if d.source_available() %}
+                    <a class="deps-action" href="{{url_for("reference_view", id=d.id)}}" title="View source code">View</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="text-right col-xs-3">
+                <div class="deps-version">Version: {{ d.version }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{{ render_pagination(deps) if deps }}
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+<script type="text/javascript">
+$(function() {
+    // Initialize search and filter state:
+    var oldV = $.getUrlParam("old_v") == "true";
+    if (oldV) {
+        $("#old-v-btn").addClass("checked");
+        $("#filter-btn").addClass("active");
+    }
+    $("input[name=old_v]").val(oldV);
+    $("#old-v-btn").click(function() {
+        $(this).toggleClass("checked");
+        $("input[name=old_v]").val($(this).hasClass("checked"));
+        $("#search-form").submit();
+    });
+    $("input[name=q]").val($.getUrlParam("q"));
+});
+</script>
+{% endblock %}

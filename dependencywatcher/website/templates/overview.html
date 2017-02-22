@@ -1,0 +1,172 @@
+{% extends "layout/dashboard.html" %}
+
+{% block title %}Overview{% endblock %}
+{% block description %}This page shows your account overview{% endblock %}
+
+{% block pagecontent %}
+	<div class="stats-wrapper row">
+		<div class="col-md-8 col-xs-12" style="padding:0;">
+			<div class="stats-tile col-md-6 col-xs-12">
+				<div class="stats-tile-header">Account</div>
+				<div class="stats-tile-content">
+					<div class="stats-item">
+						<div class="stats-item-label">Repositories</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_repositories") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num">{{ current_user.get_repositories()|length }}</div>
+					</div>
+					<div class="stats-item col-xs-6">
+						<div class="stats-item-label">Dependencies</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_repositories") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num">{{ stats.deps }}</div>
+					</div>
+					<div class="stats-item col-xs-6 border">
+						<div class="stats-item-label">Alerts</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_alerts") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num">{{ stats.alerts }}</div>
+					</div>
+					{% set last_updated = current_user.get_last_updated_repo() %}
+					{% if last_updated %}
+					<div class="stats-item col-xs-12">
+						<div class="stats-item-label">Last Updated</div>
+						<div class="stats-item-repo stats-item-link">
+							<a href="javascript:void(0);" class="repo-url" data-url="{{last_updated.url}}" title="Click to open repository">{{last_updated.url}}</a>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+			<div class="stats-tile col-md-6 col-xs-12">
+				<div class="stats-tile-header">Versions</div>
+				<div class="stats-tile-content">
+					<div class="stats-item col-xs-6">
+						<div class="stats-item-label">Outdated</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_alerts", unread="false", type="versions") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num text-danger">{{ stats.oldver }}</div>
+					</div>
+					<div class="stats-item col-xs-6 border">
+						<div class="stats-item-label">Fixed</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_alerts", fixed="true", type="versions") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num text-success">{{ stats.oldver_f }}</div>
+					</div>
+					<div class="stats-item col-xs-12">
+						<div class="stats-item-label">New Releases</div>
+						<div id="versions-chart" style="height:130px;margin:10px auto 0px"></div>
+					</div>
+				</div>
+			</div>
+			<div class="stats-tile col-md-6 col-xs-12">
+				<div class="stats-tile-header">Licensing</div>
+				<div class="stats-tile-content">
+					<div class="stats-item col-xs-6">
+						<div class="stats-item-label">Issues</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_alerts", unread="false", type="licenses") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num text-danger">{{ stats.licissues }}</div>
+					</div>
+					<div class="stats-item col-xs-6 border">
+						<div class="stats-item-label">Fixed</div>
+						<div class="stats-item-btn"><a href="{{ url_for("dashboard_alerts", fixed="true", type="licenses") }}"><i class="fa fa-play-circle"></i></a></div>
+						<div class="stats-item-num text-success">{{ stats.licissues_f }}</div>
+					</div>
+					<div class="stats-item col-xs-12">
+						<div class="stats-item-label">Usage</div>
+						<div id="licenses-chart" style="height:130px;margin:10px auto 0px"></div>
+					</div>
+				</div>
+			</div>
+			<div class="stats-tile col-md-6 col-xs-12">
+				<div class="stats-tile-header">Recommendations</div>
+				<div class="stats-tile-content">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-xs-12" style="padding:0;">
+			<div class="stats-tile news">
+				<div class="stats-tile-header">Website News</div>
+				<div class="stats-tile-content">
+					<div class="stats-item">
+						<span class="stats-item-link"><a href="{{ url_for("repository_import") }}">Added support for Mercurial repositories</a></span>
+						<span class="stats-item-date"><br/> - 01 Sep 2015</span>
+					</div>
+					<div class="stats-item">
+						<span class="stats-item-link"><a href="{{ url_for("help_integration_maven") }}">Introduced integration with Maven</a></span>
+						<span class="stats-item-date"><br/> - 02 Jan 2015</span>
+					</div>
+					<div class="stats-item">
+						<span class="stats-item-link">
+							<a href="https://dependencywatcher.com/blog/alice-in-an-un-tracked-dependencies-land">
+								New Post: "Alice in an Un-Tracked Dependencies Land"
+							</a>
+						</span>
+						<span class="stats-item-date"> - 22 Dec 2014</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript" src="//cdn.jsdelivr.net/highcharts/4.1.8/highcharts.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			var pieChartOpts = {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					backgroundColor: "rgba(255, 255, 255, 0.1)",
+				},
+				title: { text: "" },
+				credits: { enabled: false },
+				tooltip: { enabled: false },
+				plotOptions: {
+					pie: {
+						cursor: "pointer",
+						colors: ["#7cb5ec", "#f7a35c", "#90ee7e", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee", "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+						dataLabels: { enabled: false },
+						showInLegend: true,
+						point: {
+							events: {
+								legendItemClick: function () {
+									return false; 
+								}
+							}
+						}
+					}
+				},
+				legend: {
+					enabled: true,
+					layout: "vertical",
+					align: "right",
+					verticalAlign: "middle",
+					itemStyle: {"fontWeight": "500"},
+					labelFormat: "{name} - {percentage:.1f}%"
+				},
+				series: [{
+					type: "pie",
+					animation: false
+				}]
+			};
+
+			{% if stats.oldver_maj > 0 or stats.oldver_min > 0 or stats.oldver_bug > 0 %}
+				$("#versions-chart").highcharts($.extend(true, { series: [{
+					data: [
+						{ name: "Major", y: {{ stats.oldver_maj }}, color: "#5bc0de" },
+						{ name: "Minor", y: {{ stats.oldver_min }}, color: "#f0ad4e" },
+						{ name: "Bugfix", y: {{ stats.oldver_bug }}, color: "#d9534f" }
+					]}]
+				}, pieChartOpts));
+			{% endif %}
+
+			$("#licenses-chart").highcharts($.extend(true, { series: [{
+				data: [
+					{% for license,number in stats.get_license_breakdown().iteritems() %}
+						[ "{{ license|truncate(14) }}", {{ number }} ],
+					{% endfor %}
+				]}]
+			}, pieChartOpts));
+		});
+	</script>
+{% endblock %}
+

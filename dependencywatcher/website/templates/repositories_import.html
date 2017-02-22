@@ -1,0 +1,72 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Import from {{service_name}}{% endblock %}
+{% block description %}The form on this page can be used for importing existing repositories from your {{service_name}} account{% endblock %}
+
+{% block content %}
+<div class="container voffset-2 bottom-offset" role="main">
+	<div class="panel panel-default">
+		<div class="panel-body" style="padding: 25px 40px 35px;">
+			<form action="{{url_for("repositories_import")}}" accept-charset="UTF-8" role="form" method="POST">
+				{{ form.csrf_token if form }}
+				<input type="hidden" name="service" value="{{service_name}}" />
+				<fieldset>
+					<div style="padding:0px 25px 35px 25px;">
+						<h1>Import existing projects from {{service_name}}</h1>
+					</div>
+					<div class="github-repos">
+					{% for repo in repos %}
+						<div class="github-repo row" style="margin:0px;">
+							<div class="col-md-1">
+								<i class="fa {{icon_class}} fa-5x"></i>
+							</div>
+							<div class="col-md-9">
+								<h4><a href="{{repo["html_url"]}}">{{repo["full_name"]}}</a></h4>
+								<p>{{repo["description"]}}</p>
+							</div>
+							<div class="col-md-2" style="padding-top:22px;">
+								<a href="javascript:void(0);" class="btn btn-default select-btn pull-right">Select</a>
+								<input type="hidden" name="repo_url[]" value="{{repo["url"]}}" disabled />
+								<input type="hidden" name="private[]" value="{{repo["private"]}}" disabled />
+								<input type="hidden" name="type[]" value="{{repo["type"]}}" disabled />
+							</div>
+						</div>
+					{% endfor %}
+					</div>
+
+					<div class="pull-right" style="padding-top:20px;">
+						<button type="submit" class="btn btn-lg btn-primary" disabled>
+							Import selected <i class="fa fa-angle-double-right"></i></button>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+
+<script type="text/javascript">
+	$(".select-btn").click(function() {
+		$(this).toggleClass("active");
+		if ($(this).hasClass("active")) {
+			$(this).removeClass("btn-default").addClass("btn-success").text("Selected");
+			$(this).siblings("input").removeAttr("disabled");
+		} else {
+			$(this).removeClass("btn-success").addClass("btn-default").text("Select");
+			$(this).siblings("input").attr("disabled", "");
+		}
+		var btn = $("button[type='submit']");
+		if ($(".select-btn.active").length > 0) {
+			btn.removeAttr("disabled");
+		} else {
+			btn.attr("disabled", "");
+		}
+	});
+</script>
+{% endblock %}
+

@@ -1,0 +1,57 @@
+{% extends "layout/setup.html" %}
+
+{% block setupcontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-server"></i>&nbsp;&nbsp;LDAP</h5>
+	<div class="form-group" style="padding:20px 0;">
+		<div class="col-md-12">
+			Enable active directory integration to allow users signing-in using their LDAP credentials.
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-4 control-label" for="ldap_enabled">LDAP Login</label>
+		<div class="col-md-8 btn-group btn-toggle" style="padding-top:5px;padding-bottom:5px;"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox" onclick="return false;">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox" onclick="return false;">OFF</button>
+		</div>
+		<input type="checkbox" name="ldap_enabled" class="hidden" {% if config().ldap_enabled %}checked{% endif %} />
+	</div>
+	<div id="ldap-panel" style="{% if not config().ldap_enabled %}display:none;{% endif %}">
+		<div class="form-group {% if form.ldap_url.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="ldap_url">URL</label>
+			<div class="col-md-8">
+				<input class="form-control" name="ldap_url" type="text" 
+					value="{{ form.ldap_url.data or config().ldap_url or "" }}"></input>
+			</div>
+		</div>
+		<div class="form-group {% if form.ldap_basedn.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="ldap_basedn">Base DN</label>
+			<div class="col-md-8">
+				<input class="form-control" name="ldap_basedn" type="text" 
+					value="{{ form.ldap_basedn.data or config().ldap_basedn or "" }}"></input>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-8">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		$(function() {
+			$("input[type=checkbox]").change(function() {
+				$("#ldap-panel").css({"display": $(this).is(":checked") ? "" : "none"});
+			});
+		});
+	</script>
+{% endblock %}
+

@@ -1,0 +1,62 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block description %}View or update your account information here{% endblock %}
+
+{% block content %}
+<div class="container" role="main">
+	<div class="page-title">
+		<h1>Manage Profile</h1>
+	</div>
+	<div class="page-content">
+
+		<div class="col-md-3 profile-sidebar divider-vertical-r">
+			<ul class="nav nav-stacked">
+				<li class="nav-header">General</li>
+				<li {% if request.path==url_for("profile_account") %}class="active"{% endif %}>
+					<a href="{{url_for("profile_account")}}">Account settings</a>
+				</li>
+				<li {% if request.path==url_for("profile_alerts") %}class="active"{% endif %}>
+					<a href="{{url_for("profile_alerts")}}">Notifications</a>
+				</li>
+				{% if config().github_enabled or config().bitbucket_enabled %}
+					<li {% if request.path==url_for("profile_keys") %}class="active"{% endif %}>
+						<a href="{{url_for("profile_keys")}}">Deploy Key</a>
+					</li>
+				{% endif %}
+				{% if not config().on_premise %}
+					<li class="nav-divider"></li>
+					<li class="nav-header">Plans and Billing</li>
+					<li {% if request.path==url_for("profile_plan") %}class="active"{% endif %}>
+						<a href="{{url_for("profile_plan")}}">Plan details</a>
+					</li>
+				{% endif %}
+				<li class="nav-divider"></li>
+				<li class="nav-header">API and Integration</li>
+				<li {% if request.path==url_for("profile_api_key") %}class="active"{% endif %}>
+					<a href="{{url_for("profile_api_key")}}">API Key</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="col-md-9">
+			<div style="padding: 10px;">
+				{% include "layout/alerts.html" %}
+			</div>
+
+			<div style="padding: 15px 0px;">
+				<form class="form-horizontal" role="form" method="POST" accept-charset="UTF-8" enctype="multipart/form-data">
+					{{ form.csrf_token if form }}
+					<fieldset>
+						{% block profilecontent %}
+						{% endblock %}
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+

@@ -1,0 +1,74 @@
+{% extends "layout/form.html" %}
+
+{% block title %}Create an account{% endblock %}
+{% block description %}Sign-Up with DependencyWatcher using this form{% endblock %}
+
+{% block formcontainerclass %}form-signup{% endblock %}
+{% block formclass %}form-horizontal{% endblock %}
+
+{% block form %}
+	<legend>Sign Up</legend>
+	<div class="form-group {% if form.name.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="name">Full Name</label>
+		<div class="col-md-8">
+			<input class="form-control" autofocus placeholder="Please provide your full name"
+				name="name" type="text" required value="{{ form.name.data if form.name.data }}"></input>
+		</div>	
+	</div>
+	<div class="form-group {% if form.email.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="email">Email</label>
+		<div class="col-md-8">
+			<input class="form-control" placeholder="Please provide your email"
+				name="email" type="email" required value="{{ form.email.data if form.email.data }}"></input>
+		</div>	
+	</div>
+	<div class="form-group {% if form.password.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="password">Password</label>
+		<div class="col-md-8">
+			<input class="form-control" placeholder="Please choose new password"
+				name="password" type="password" value="" required></input>
+		</div>
+	</div>
+	<div class="form-group {% if form.cpassword.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="password">Confirm Password</label>
+		<div class="col-md-8">
+			<input class="form-control" placeholder="Please confirm chosen password"
+				name="cpassword" type="password" value="" required></input>
+		</div>
+	</div>
+	<div class="form-group" style="margin-top:25px">
+		<div class="col-md-8 col-md-offset-4">
+			<input class="btn btn-success" type="submit" value="Submit" style="width:100%;"></input>
+		</div>
+	</div>
+	{% if config().github_enabled or config().bitbucket_enabled %}
+		<div class="form-group" style="padding:15px 0;">
+			<div class="col-md-8 col-md-offset-4">
+				<div style="height:1px;background-color:#ddd;text-align:center; margin:0 5px;">
+					<span style="background-color:#fff;position:relative;top:-0.6em;">&nbsp;&nbsp;OR&nbsp;&nbsp;</span>
+				</div>
+			</div>
+		</div>
+		<div class="form-group text-center">
+			<div class="col-md-8 col-md-offset-4 col-xs-12">
+				{% if config().github_enabled %}
+					<a class="btn btn-default btn-sm" href="{{url_for("github_login")}}?next={{request.args.get("next", url_for("index"))}}">
+						<i class="fa fa-github-alt"></i>&nbsp;|&nbsp;Login with GitHub
+					</a>
+				{% endif %}
+				{% if config().bitbucket_enabled %}
+					<a class="btn btn-default btn-sm" style="margin-left:10px;" href="{{url_for("bitbucket_login")}}?next={{request.args.get("next", url_for("index"))}}">
+						<i class="fa fa-bitbucket"></i>&nbsp;|&nbsp;Login with BitBucket
+					</a>
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+	<div class="form-group">
+		<div class="col-md-8 col-md-offset-4">
+			<div class="form-separator"></div>
+			<a href="{{url_for("login")}}">Already have an account?</a>
+		</div>
+	</div>
+{% endblock %}
+

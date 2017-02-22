@@ -1,0 +1,22 @@
+{% extends "layout/landing.html" %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="form-outer">
+	<div class="form-middle">
+		<div class="form-inner container">
+			<div class="col-md-6 col-md-offset-3">
+				<div class="alert alert-white">
+					<button type="button" class="close" onclick="document.location='{{nexturl if nexturl else "/"}}'">×</button>
+					<span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;<strong>{{msgtitle}}</strong>
+					<hr class="message-inner-separator">
+					<p>{{msgtext|safe}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+

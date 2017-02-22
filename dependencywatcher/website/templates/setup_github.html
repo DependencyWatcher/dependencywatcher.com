@@ -1,0 +1,64 @@
+{% extends "layout/setup.html" %}
+
+{% block setupcontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-github-alt"></i>&nbsp;&nbsp;GitHub</h5>
+	<div class="form-group" style="padding:20px 0;">
+		<div class="col-md-12">
+			Enable GitHub integration to allow users signing-in using their GitHub accounts.
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-4 control-label" for="github_enabled">GitHub Login</label>
+		<div class="col-md-8 btn-group btn-toggle" style="padding-top:5px;padding-bottom:5px;"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox" onclick="return false;">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox" onclick="return false;">OFF</button>
+		</div>
+		<input type="checkbox" name="github_enabled" class="hidden" {% if config().github_enabled %}checked{% endif %} />
+	</div>
+	<div id="github-panel" style="{% if not config().github_enabled %}display:none;{% endif %}">
+		<div class="form-group {% if form.github_client_id.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="github_client_id">Client ID</label>
+			<div class="col-md-8">
+				<input class="form-control" name="github_client_id" type="text" 
+					value="{{ form.github_client_id.data or config().github_client_id or "" }}"></input>
+			</div>
+		</div>
+		<div class="form-group {% if form.github_client_secret.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="github_client_secret">Client Secret</label>
+			<div class="col-md-8">
+				<input class="form-control" name="github_client_secret" type="text" 
+					value="{{ form.github_client_secret.data or config().github_client_secret or "" }}"></input>
+			</div>
+		</div>
+		<div class="form-group {% if form.github_scope.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="github_scope">Scope</label>
+			<div class="col-md-8">
+				<input class="form-control" name="github_scope" type="text" 
+					value="{{ form.github_scope.data or config().github_scope or "" }}"></input>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-8">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		$(function() {
+			$("input[type=checkbox]").change(function() {
+				$("#github-panel").css({"display": $(this).is(":checked") ? "" : "none"});
+			});
+		});
+	</script>
+{% endblock %}
+

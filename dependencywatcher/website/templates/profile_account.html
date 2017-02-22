@@ -1,0 +1,67 @@
+{% extends "layout/profile.html" %}
+
+{% block profilecontent %}
+<div class="col-md-9 col-lg-8">
+	<div class="form-group {% if form.name.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="name">Full Name</label>
+		<div class="col-md-8">
+			<input type="text" placeholder="Your full name" class="form-control" name="name"
+				value="{{form.name.data if form.name.data else current_user.name if current_user.name}}"/>
+		</div>
+	</div>
+	<div class="form-group {% if form.email.errors %}has-error{% endif %}">
+		<label class="col-md-4 required control-label" for="email">Email</label>
+		<div class="col-md-8">
+			<input type="email" placeholder="Your email address" class="form-control" name="email"
+				required value="{{form.email.data if form.email.data else current_user.email}}"/>
+		</div>
+	</div>
+	<div class="form-group {% if form.password.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="password">New Password</label>
+		<div class="col-md-8">
+			<input class="form-control" placeholder="Enter new password here" name="password" type="password" value=""></input>
+		</div>
+	</div>
+	<div class="form-group {% if form.cpassword.errors %}has-error{% endif %}">
+		<label class="col-md-4 control-label" for="cpassword">Confirm Password</label>
+		<div class="col-md-8">
+			<input class="form-control" placeholder="Confirm new password" name="cpassword" type="password" value=""></input>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-8">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="col-md-3 col-lg-4">
+	<a href="javascript:void(0);" style="width:128px;height:128px" id="profile-thumbnail-link" class="thumbnail"
+		data-toggle="tooltip" data-placement="bottom" title="Click to change the picture">
+		<img id="profile-thumbnail-image"
+			src="{% if current_user.avatar %}data:image/png;base64,{{current_user.avatar.image128.encode("base64").replace("\n","")}}{% else %}/static/images/man.png{% endif %}">
+	</a>
+	<input type="file" id="profile-image-input" name="image" hidden="true" style='display:none' />
+</div>
+{% endblock %}
+
+{% block body %}
+{{ super() }}
+<script type="text/javascript">
+	$("#profile-image-input").change(function() {
+		if (this.files && this.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				$("#profile-thumbnail-image").attr("src", e.target.result);
+			}
+			reader.readAsDataURL(this.files[0]);
+		}
+	});
+	$("#profile-thumbnail-link").click(function(e) {
+		e.preventDefault();
+		$("#profile-image-input").trigger("click");
+	});
+</script>
+{% endblock %}

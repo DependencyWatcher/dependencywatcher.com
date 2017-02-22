@@ -1,0 +1,32 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block description %}This page shows your imported repositories statuses{% endblock %}
+
+{% block content %}
+<div class="page-title">
+	<div class="container"><h1>Dashboard</h1></div>
+</div>
+<div class="container bottom-offset" role="main">
+	<ul class="nav page-nav">
+		<li {% if request.path==url_for('dashboard_overview') %}class="active"{% endif %}>
+			<a href="{{url_for("dashboard_overview")}}">Overview</a>
+		</li>
+		<li {% if request.path==url_for('dashboard_repositories') %}class="active"{% endif %}>
+			<a href="{{url_for("dashboard_repositories")}}">Repositories</a>
+		</li>
+		<li {% if request.path.startswith(url_for('dashboard_alerts')) %}class="active"{% endif %}>
+			<a href="{{url_for("dashboard_alerts")}}">Alerts</a>
+		</li>
+		{% block navitem %}{% endblock %}
+	</ul>
+
+	<div class="page-content">
+		{% block pagecontent %}
+		{% endblock %}
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+

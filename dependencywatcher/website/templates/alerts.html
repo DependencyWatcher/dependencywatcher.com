@@ -1,0 +1,147 @@
+{% extends "layout/dashboard.html" %}
+
+{% block title %}Alerts{% endblock %}
+{% block description %}Alerts page shows warnings generated on dependencies used in your projects. Warnings include: updated licenses, outdated versions, etc.{% endblock %}
+
+{% block pagecontent %}
+	<div class="page-title col-md-6">Alerts</div>
+
+	<div class="row">
+		<form action="{{url_for(request.endpoint, url=request.view_args["url"])}}" id="search-form" role="search" class="col-md-5 pull-right" style="padding-top:20px;display:table;">
+			<div style="display:table-cell;">
+					<div class="input-group">
+						<input type="text" class="form-control input-sm" placeholder="Search" name="q"></input>
+						<input type="hidden" name="unread" value="true"></input>
+						<input type="hidden" name="type"></input>
+						<div class="input-group-btn">
+							<button class="btn btn-default btn-sm" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+						</div>
+					</div>
+			</div>
+			<div class="btn-group" style="display:table-cell;padding-left:10px;">
+				<button id="filter-btn" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+					Filter&nbsp;<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right arrow" role="menu">
+					<li><a id="hide-read-btn" href="javascript:void(0);" class="checked">Hide ignored alerts</a></li>
+					<li class="divider"></li>
+					<li><a class="show-only" data-type="versions" href="javascript:void(0);">Version issues only</a></li>
+					<li><a class="show-only" data-type="licenses" href="javascript:void(0);">Licensing issues only</a></li>
+				</ul>
+			</div>
+			<div class="btn-group" style="display:table-cell;padding-left:10px;">
+				<button type="submit" class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
+			</div>
+		</form>
+	</div>
+	<div class="alerts-list">
+		{% if request.args.get("q") %}
+			<p>Showing results for: <b>{{request.args.get("q")}}</b></p>
+		{% endif %}
+		{% if alerts.items|length == 0 %}
+			<div style="padding:40px 30px;">No alerts found.</div>
+		{% else %}
+			{% for a in alerts.items %}
+				{% set url = a.reference.dependency.url if a.reference.dependency.url else feeling_lucky_url(a.reference.dependency.name) %}
+				<div class="alerts-item {% if a.read %}read{% endif %}">
+					<div class="pull-left"><i class="fa
+						{% if a.fixed %}
+							fa-check-square text-success
+						{% else %}
+							fa-warning
+							{% if a.type != a.NEW_VERSION or a.release_type == Version.REL_BUGFIX %}text-danger
+							{% else %}text-warning
+							{% endif %}
+						{% endif %}
+					" style="font-weight:bold;"></i></div>
+					<div class="alerts-content">
+						{% if a.type == a.NEW_VERSION %}
+							<a href="{{ url }}" target="_blank">{{ a.reference.dependency.name }}</a>
+							used in 
+							<a href="javascript:void(0);" class="repo-url" data-url="{{a.reference.repository.url}}" title="View repository">{{a.reference.repository.url}}</a>
+							is outdated. New 
+							{% if a.release_type == Version.REL_MAJOR %}major{% endif %}
+							{% if a.release_type == Version.REL_MINOR %}minor{% endif %}
+							{% if a.release_type == Version.REL_BUGFIX %}bugfix{% endif %}
+							 version <b>{{ a.reference.dependency.version }}</b> has been released
+							{% if a.reference.dependency.updated %} <span class="time">{{ a.reference.dependency.updated }}</span>{% endif %}.
+						{% elif a.type == a.NEW_LICENSE %}
+							License of <a href="{{ url }}" target="_blank">{{ a.reference.dependency.name }}</a>
+							used in <a href="javascript:void(0);" class="repo-url" data-url="{{a.reference.repository.url}}" title="View repository">{{a.reference.repository.url}}</a>
+							was upgraded. It is now licensed under <b>{{a.reference.dependency.license.normalized}} License</b>.
+						{% endif %}
+						<div class="alerts-actions">
+							<span class="alerts-created time">{{a.created}}</span>
+							<a class="read-link alerts-action" href="javascript:void(0);" data-id="{{a.id}}" title="Mark as fixed">Ignore</a>
+							<a class="unread-link alerts-action" href="javascript:void(0);" data-id="{{a.id}}" title="Restore this alert, and unmark it as fixed">Restore</a>
+							{% if a.reference.source_available() %}
+								<a class="alerts-action" href="{{url_for("reference_view", id=a.reference.id)}}" title="View source code">View</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+	{{ render_pagination(alerts) if alerts }}
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		$(function() {
+			$(".time").each(function() {
+				$(this).text(moment.utc($(this).text()).fromNow());
+			});
+
+			// Initialize search and filter state:
+			var unread = $.getUrlParam("unread") != "false";
+			if (!unread) {
+				$("#hide-read-btn").removeClass("checked");
+				$("#filter-btn").addClass("active");
+			}
+			$("input[name=unread]").val(unread);
+			$("#hide-read-btn").click(function() {
+				$(this).toggleClass("checked");
+				$("input[name=unread]").val($(this).hasClass("checked"));
+				$("#search-form").submit();
+			});
+			$("input[name=q]").val($.getUrlParam("q"));
+
+			var type = $.getUrlParam("type");
+			if (type) {
+				$(".show-only").removeClass("checked");
+				$(".show-only[data-type=" + type + "]").addClass("checked");
+				$("#filter-btn").addClass("active");
+			}
+			$(".show-only").click(function() {
+				$(this).toggleClass("checked");
+				$("input[name=type]").val($(this).hasClass("checked") ? $(this).data("type") : "");
+				$("#search-form").submit();
+			});
+
+			$(".read-link").click(function() {
+				var link = $(this).attr("disabled", "");
+				$.ajax({
+					url: "/alert/" + link.data("id") + "/read",
+					type: "PUT",
+					success: function() {
+						link.closest(".alerts-item").addClass("read");
+						link.removeAttr("disabled");
+					}
+				});
+			});
+			$(".unread-link").click(function() {
+				var link = $(this).attr("disabled", "");
+				$.ajax({
+					url: "/alert/" + link.data("id") + "/unread",
+					type: "PUT",
+					success: function() {
+						link.closest(".alerts-item").removeClass("read");
+						link.removeAttr("disabled");
+					}
+				});
+			});
+		});
+	</script>
+{% endblock %}

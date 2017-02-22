@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head prefix="og: http://ogp.me/ns#">
+		<title>{% block title %}Home{% endblock %} | Dependency Watcher</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="keywords" content="dependency,watch,track,library,version,maven" />
+		<meta name="description" content="{% block description %}This service helps keep your project dependencies up to date{% endblock %}" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="google-site-verification" content="v2apy6tlOLboMuhFv99e08IF8nXHxYwMJrlHsNdqkb4" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="{{ request.url_root }}" />
+		<meta property="og:site_name" content="Dependency Watcher" />
+		<meta property="og:title" content="{{ self.title() }}" />
+		<meta property="og:description" content="{{ self.description() }}" />
+		<meta property="og:image" content="{{ request.url_root }}static/images/og_logo.png" />
+
+		<link rel="profile" href="http://www.w3.org/2005/10/profile" />
+		<link rel="icon" type="image/png" href="/static/images/icon.png" />
+		{% if not "Windows" in request.user_agent.string %}
+			<link rel="stylesheet" href="//brick.a.ssl.fastly.net/Roboto:400,500,700" />
+		{% endif %}
+		<link href="//cdn.jsdelivr.net/bootswatch/3.3.5/readable/bootstrap.min.css" rel="stylesheet" />
+		<link href="//cdn.jsdelivr.net/fontawesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" />
+		{% block head %}{% endblock %}
+	</head>
+
+	<body>
+		{% block header %}{% endblock %}
+		{% block content %}{% endblock %}
+
+		<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@2.1.4(jquery.min.js),bootstrap@3.3.5(js/bootstrap.min.js),momentjs@2.10.6(moment.min.js)"></script>
+		
+		{% if "dependencywatcher.com" in config().site_url %}
+		<!-- Google Analytics -->
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-23508932-6', 'auto');
+			ga('send', 'pageview');
+		</script>
+		{% endif %}
+
+		{% block body %}{% endblock %}
+		{% block footer %}{% endblock %}
+	</body>
+</html>

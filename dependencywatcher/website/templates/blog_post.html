@@ -1,0 +1,76 @@
+{% extends "layout/landing.html" %}
+
+{% block title %}{% if edit %}Edit{% else %}New{% endif %} Blog Post{% endblock %}
+
+{% block head %}
+	{{ super() }}
+	<link href="/static/css/pagedown.min.css?v20140820-2123" rel="stylesheet" />
+	<link href="//cdn.jsdelivr.net/bootstrap.tagsinput/0.5.0/bootstrap-tagsinput.css" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:100px;">
+	<div class="blog-post-form">
+		<div class="page-header"><h2>{% if edit %}Edit{% else %}New{% endif %} Blog Post</h2></div>
+		{% include "layout/alerts.html" %}
+		<form accept-charset="UTF-8" role="form" method="POST">
+			{{ form.csrf_token if form }}
+			<fieldset>
+				<div class="form-group {% if form.title.errors %}has-error{% endif %}">
+					<input class="bootstrap-tagsinput" name="title" placeholder="Title" type="text" required value="{{ form.title.data if form.title.data }}"/>
+				</div>
+				<div class="form-group {% if form.content.errors %}has-error{% endif %}">
+					<div id="wmd-button-bar" style="margin-top:25px;"></div>
+					<textarea id="wmd-input" class="bootstrap-tagsinput wmd-input"
+						name="content" required placeholder="Text" rows="10">{{ form.content.data if form.content.data }}</textarea>
+					<div id="wmd-preview" class="hidden bootstrap-tagsinput wmd-preview"></div>
+				</div>
+				<div class="form-group {% if form.tags.errors %}has-error{% endif %}">
+					<select name="tags" multiple class="hidden" placeholder="Enter some tags...">
+						{% for tag in form.tags.data %}
+							<option value="{{tag.name}}" selected="selected">{{tag.name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-success pull-right" type="submit">{% if edit %}Update{% else %}Post{% endif %}</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Converter.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Editor.js"></script>
+	<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.tagsinput/0.4.2/bootstrap-tagsinput.min.js"></script>
+	<script type="text/javascript">
+		var helpOptions = {
+			handler: function() {
+				var input = $("#wmd-input");
+				var preview = $("#wmd-preview");
+				if (input.hasClass("hidden")) {
+					input.removeClass("hidden");
+					preview.addClass("hidden");
+				} else {
+					input.addClass("hidden");
+					preview.removeClass("hidden");
+				}
+			},
+			title: "Preview"
+		};
+		new Markdown.Editor(new Markdown.Converter(), "", helpOptions).run();
+
+		$("select[name='tags']").tagsinput({
+			tagClass: "blog-post-tag",
+			confirmKeys: [13, 44, 32]
+		});
+	</script>
+{% endblock %}
+

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% macro button(link,title) %}
+	<p style="padding:15px 0;">
+		<a href="{{link}}"
+			style="background-color:#3fad46;color:#fff;padding:10px 12px;border:1px solid #3fad46;font-size:16px;line-height:1.1em;border-radius:4px;text-decoration:none;font-weight:bold;">
+			{{title}}
+		</a>
+	</p>
+{% endmacro %}
+<html>
+<body style="margin:0;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;">
+	<div style="background-color:#f1f1f1;padding:20px 40px 45px;width:600px;">
+		<p style="margin-bottom:30px;">
+			<img style="vertical-align:middle;margin-right:1rem;margin-bottom:6px;" src="cid:logo32">
+			<span style="font-size:18px;letter-spacing:2px;">DependencyWatcher</span>
+		</p>
+		<div style="background-color:#fff;padding:40px;border:1px solid #ccc;">
+			{% block content %}{% endblock %}
+			<p style="margin-top:30px;">
+				Sincerely,<br/>
+				-- The DependencyWatcher Team<br/>
+			</p>
+			<div style="font-size:12px;">{% block afterfooter %}{% endblock %}</div>
+		</div>
+	</div>
+</body>
+</html>

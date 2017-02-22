@@ -1,0 +1,58 @@
+{% extends "layout/setup.html" %}
+
+{% block setupcontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-bitbucket"></i>&nbsp;&nbsp;BitBucket</h5>
+	<div class="form-group" style="padding:20px 0;">
+		<div class="col-md-12">
+			Enable BitBucket integration to allow users signing-in using their BitBucket accounts.
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-4 control-label" for="bitbucket_enabled">BitBucket Login</label>
+		<div class="col-md-8 btn-group btn-toggle" style="padding-top:5px;padding-bottom:5px;"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox" onclick="return false;">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox" onclick="return false;">OFF</button>
+		</div>
+		<input type="checkbox" name="bitbucket_enabled" class="hidden" {% if config().bitbucket_enabled %}checked{% endif %} />
+	</div>
+	<div id="bitbucket-panel" style="{% if not config().bitbucket_enabled %}display:none;{% endif %}">
+		<div class="form-group {% if form.bitbucket_key.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="bitbucket_key">Key</label>
+			<div class="col-md-8">
+				<input class="form-control" name="bitbucket_key" type="text" 
+					value="{{ form.bitbucket_key.data or config().bitbucket_key or "" }}"></input>
+			</div>
+		</div>
+		<div class="form-group {% if form.bitbucket_secret.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="bitbucket_secret">Secret</label>
+			<div class="col-md-8">
+				<input class="form-control" name="bitbucket_secret" type="text" 
+					value="{{ form.bitbucket_secret.data or config().bitbucket_secret or "" }}"></input>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-8">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		$(function() {
+			$("input[type=checkbox]").change(function() {
+				$("#bitbucket-panel").css({"display": $(this).is(":checked") ? "" : "none"});
+			});
+		});
+	</script>
+{% endblock %}
+

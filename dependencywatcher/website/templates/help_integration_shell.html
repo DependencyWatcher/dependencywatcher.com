@@ -1,0 +1,47 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Shell Script Integration{% endblock %}
+{% block description %}This page describes how to sync your projects with DependencyWatcher from shell script{% endblock %}
+
+{% block head %}
+	{{ super() }}
+	<script type="text/javascript" src="//cdn.jsdelivr.net/highlight.js/8.8.0/highlight.min.js"></script>
+	<link href="//cdn.jsdelivr.net/highlight.js/8.8.0/styles/github.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="container voffset-2 bottom-offset" role="main">
+	<div class="panel panel-default col-md-10 col-md-offset-1">
+		<div class="panel-body" style="padding: 15px 25px 70px;">
+			<div class="page-header" style="padding:0px 25px 15px 25px;">
+				<h1>Shell Script Integration</h1>
+			</div>
+
+			<p>The shell script integration allows synchronizing your projects with the DependencyWatcher service from any build process.
+				To use this feature you must obtain your <a href="{{ url_for("profile_api_key") }}">API Key</a> first.</p>
+
+			<p>Please also make sure that cURL utility is installed on your Linux build machine.</p>
+
+			<br/>
+			<h5>Uploading Project</h5>
+			<p>To upload or update project on DependencyWatcher during build, run the following
+				shell command from your project root folder (replace <i>ProjectName</i> with the actual project name):</p>
+
+			<pre style="border:0;background:#fff;border-radius:0;padding:0;">
+				<code class="shell" style="border:1px solid #ddd;border-radius:0;margin:0;padding:3px 15px;background:#fff">curl -sS -H "Authorization: apikey={{current_user.api_key or "Your API key here"}}" \
+	{{request.url_root}}repository/<i>ProjectName</i>/upload.sh | sh</code>
+			</pre>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		hljs.initHighlightingOnLoad();
+	</script>
+{% endblock %}

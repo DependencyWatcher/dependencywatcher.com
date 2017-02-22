@@ -1,0 +1,21 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+	<p>Dear {{ user.get_name() }},</p>
+	<p>Thank you for registering with DependencyWatcher!</p>
+
+	<p>Next steps:</p>
+	<ol style="margin-bottom:20px;">
+		<li style="margin-bottom:10px;"><a style="color:#3b73af;" href="{{ config().site_url }}/repository/import">Import Your Repositories</a></li>
+		<li style="margin-bottom:10px;"><a style="color:#3b73af;" href="{{ config().site_url }}/dashboard">View Your DependencyWatcher Dashboard</a></li>
+		<li style="margin-bottom:10px;"><a style="color:#3b73af;" href="https://dependencywatcher.com/blog">Visit Our Blog to Learn More</a></li>
+	</ol>
+
+	{{ button(config().site_url ~ "/login", "Sign-In to Your Account") }}
+
+	<p>To find more information or get in touch, visit our <a style="color:#3b73af;" href="https://dependencywatcher.uservoice.com">Help Center</a>.</p>
+{% endblock %}
+
+{% block afterfooter %}
+	<p><a style="color:#3b73af;" href="http://dependencywatcher.us9.list-manage2.com/unsubscribe?u=f171717f2fa8ccdfaa8c5639c&id=b994b018e3">Unsubscribe</a> from emails like this.</a></p>
+{% endblock %}

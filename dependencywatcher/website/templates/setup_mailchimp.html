@@ -1,0 +1,61 @@
+{% extends "layout/setup.html" %}
+
+{% block setupcontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-list-alt"></i>&nbsp;&nbsp;MailChimp</h5>
+	<div class="form-group" style="padding:20px 0;">
+		<div class="col-md-12">
+			Enable mailing lists by configuring MailChimp API settings.
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-4 control-label" for="mailchimp_enabled">MailChimp Integration</label>
+		<div class="col-md-8 btn-group btn-toggle" style="padding-top:5px;padding-bottom:5px;"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox" onclick="return false;">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox" onclick="return false;">OFF</button>
+		</div>
+		<input type="checkbox" name="mailchimp_enabled" class="hidden" {% if config().mailchimp_enabled %}checked{% endif %} />
+	</div>
+	<div id="mailchimp-panel" style="{% if not config().mailchimp_enabled %}display:none;{% endif %}">
+		<div class="form-group {% if form.mailchimp_api_key.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="mailchimp_api_key">API Key</label>
+			<div class="col-md-8">
+				<input class="form-control" name="mailchimp_api_key" type="text" 
+					data-toggle="tooltip" data-placement="right" title="MailChimp API Key"
+					value="{{ form.mailchimp_api_key.data or config().mailchimp_api_key or "" }}"></input>
+			</div>
+		</div>
+		<div class="form-group {% if form.mailchimp_list_news.errors %}has-error{% endif %}">
+			<label class="col-md-4 required control-label" for="mailchimp_list_news">News List ID</label>
+			<div class="col-md-8">
+				<input class="form-control" name="mailchimp_list_news" type="text" 
+					data-toggle="tooltip" data-placement="right"
+					title="All new users get subscribed to this mailing list automatically"
+					value="{{ form.mailchimp_list_news.data or config().mailchimp_list_news or "" }}"></input>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-8">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		$(function() {
+			$("input[type=checkbox]").change(function() {
+				$("#mailchimp-panel").css({"display": $(this).is(":checked") ? "" : "none"});
+			});
+		});
+	</script>
+{% endblock %}
+

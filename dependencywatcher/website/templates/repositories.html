@@ -1,0 +1,122 @@
+{% extends "layout/dashboard.html" %}
+
+{% block title %}Repositories{% endblock %}
+{% block description %}This page shows all imported repositories and some basic information on each repository{% endblock %}
+
+{% block pagecontent %}
+	<div class="page-title col-md-6">Repositories</div>
+
+	<div class="row">
+		<form id="search-form" role="search" class="col-md-4 pull-right" style="padding-top:20px;display:table;">
+			<div style="display:table-cell;">
+				<div class="input-group">
+					<input type="text" class="form-control input-sm" placeholder="Search" name="q"></input>
+					<div class="input-group-btn">
+						<button class="btn btn-default btn-sm" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div id="undo-alert" class="alert alert-warning alert-dismissable hidden" style="margin-top:20px;">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		Repository <span></span> has been removed. <a class="restore-btn alert-link" href="javascript:void(0);">Undo</a>
+	</div>
+
+	<div class="repo-list">
+		{% if request.args.get("q") %}
+			<p>Showing results for: <b>{{request.args.get("q")}}</b></p>
+		{% endif %}
+		{% if repos|length == 0 %}
+			<div style="padding:40px 30px;">
+				No repositories found. Click <a href="{{url_for("repository_import")}}">here</a> to import some repositories.
+			</div>
+		{% else %}
+			{% for repo in repos %}
+				<div class="repo-item" data-url="{{repo.url}}">
+					<div class="pull-right repo-actions" style="visibility:hidden;">
+						<a href="javascript:void(0);" class="delete-btn" title="Remove this repository">
+							<i class="glyphicon glyphicon-remove"></i>
+						</a>
+					</div>
+					<i class="fa fa-bookmark-o fa-2x"></i>&nbsp;&nbsp;
+					<a href="javascript:void(0);" class="repo-url" data-url="{{repo.url}}" title="Click to view project dependencies">{{repo.url}}</a>
+					<div class="repo-content">
+						<span>Updated <span class="last-update">{{repo.last_update}}</span></span>
+						<span style="margin-left: 20px;">
+							{% if not repo.parsed %}<span class="blink text-warning">calculating dependencies</span>
+							{% else %}
+								{% set num_references = repo.stats.deps %}
+								{{ num_references }} {{plurify(num_references, "dependency", "dependencies")}}
+							{% endif %}
+						</span>
+                        {% if repo.parsed %}
+                            <span style="margin-left: 20px;" class="text-warning">
+                                {{ repo.stats.outdated }} outdated
+                            </span>
+                        {% endif %}
+						{% if repo.type == repo.FILE %}
+							<span style="margin-left: 20px;">
+								<a href="{{url_for("repository_upload", url=encodeURIComponent(repo.url))}}" title="Update repository by uploading a new version">update</a>
+							</span>
+						{% endif %}
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		$(function() {
+			$(".last-update").each(function() {
+				$(this).text(moment.utc($(this).text()).fromNow());
+			});
+
+			$(document).on("click", ".delete-btn", function() {
+				var btn = $(this);
+				var repoItem = btn.closest(".repo-item");
+				var repoUrl = repoItem.data("url");
+				btn.attr("disabled", "");
+				$.ajax({
+					url: "/repository/" + encodeURIComponent(repoUrl),
+					type: "DELETE",
+					success: function(r) {
+						var a = $("#undo-alert");
+						a.find("span").text(repoUrl);
+						a.find("a").data("url", repoUrl);
+						a.removeClass("hidden");
+						repoItem.addClass("hidden");
+						btn.removeAttr("disabled");
+					}
+				});
+			});
+			$(document).on("click", ".restore-btn", function() {
+				var btn = $(this).attr("disabled", "");
+				var repoUrl = btn.data("url");
+				$.ajax({
+					url: "/repository/" + encodeURIComponent(repoUrl) + "/restore",
+					type: "PUT",
+					success: function(r) {
+						$("#undo-alert").addClass("hidden");
+						$(".repo-item[data-url='" + repoUrl + "']").removeClass("hidden");
+						btn.removeAttr("disabled");
+					}
+				});
+			});
+
+			$(".repo-item").on("mouseover", function() {
+				$(this).find(".repo-actions").css({"visibility":""});
+			}).on("mouseout", function() {
+				$(this).find(".repo-actions").css({"visibility":"hidden"});
+			});
+
+			// Initialize search:
+			$("input[name=q]").val($.getUrlParam("q"));
+		});
+	</script>
+{% endblock %}

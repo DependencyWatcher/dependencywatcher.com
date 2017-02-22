@@ -1,0 +1,12 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+	<p>Dear {{user.get_name()}},</p>
+	<p>Your weekly report is attached!</p>
+
+	{{ button(config().site_url ~ "/dashboard", "Sign-In to Your Dashboard") }}
+{% endblock %}
+
+{% block afterfooter %}
+	<p><a style="color:#3b73af;" href="{{ config().site_url }}/profile/alerts">Unsubscribe</a> from weekly reports.</a></p>
+{% endblock %}

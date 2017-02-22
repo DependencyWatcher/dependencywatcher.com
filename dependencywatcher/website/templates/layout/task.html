@@ -1,0 +1,70 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}{{task_title}}{% endblock %}
+
+{% block content %}
+<div class="container voffset-2 bottom-offset" role="main">
+	<div class="panel panel-default" style="padding: 5px 20px;">
+		<div class="panel-body" style="padding: 25px 10px 10px;">
+		{% for task in tasks %}
+			<div id="task-{{task.id}}" class="task-progress">
+				<span class="task-status task-status-ok pull-right hidden"><i class="glyphicon glyphicon-ok"></i></span>
+				<span class="task-status task-status-error pull-right hidden"><i class="fa fa-question"></i></span>
+				<p class="task-progress-title">{% block taskicon %}{% endblock %}{{task.title}} ...</p>
+				<div class="progress active"><div class="progress-bar" style="width: 0%"></div></div>
+				<div class="alert alert-danger task-error-alert hide"></div>
+			</div>
+		{% endfor %}
+
+		{% block panelbody %}{% endblock %}
+		</div>
+	</div>
+</div>
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		function updateProgress(task) {
+			var n = $("#task-" + task.id);
+			var p = n.find(".progress-bar");
+			if (task.state == "FAILURE") {
+				var error = task.result;
+				n.find(".task-error-alert").removeClass("hide").text(error);
+				p.parent().remove();
+				n.find(".task-status-error").removeClass("hidden").attr("title", error);
+			} else {
+				var progress = task.result && task.result.progress ? task.result.progress : 0;
+				if (task.state == "SUCCESS") {
+					p.parent().removeClass("active");
+					n.find(".task-status-ok").removeClass("hidden");
+					progress = 100;
+				}
+				p.css({"width": progress + "%"});
+			}
+		}
+
+		function refresh() {
+			$.ajax({
+				url: "/task/{{ tasks|join(",", attribute="id") }}",
+				success: function(data) {
+					data = data.data
+					for (var i = 0; i < data.length; ++i) {
+						updateProgress(data[i]);
+					}
+					if (typeof(onRefresh) == "function") {
+						onRefresh(data);
+					}
+				},
+				complete: function() {
+					setTimeout(refresh, {{ refresh_freq if refresh_freq else 3000 }});
+				}
+			});
+		}
+
+		refresh();
+	</script>
+{% endblock %}
+

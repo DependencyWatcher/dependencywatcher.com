@@ -1,0 +1,40 @@
+{% extends "layout/profile.html" %}
+
+{% block profilecontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-key"></i>&nbsp;&nbsp;Deploy Key</h5>
+	<div class="form-group" style="padding-top:20px;">
+		<div class="col-md-12">
+			This deploy key is used when cloning private repositories from GitHub and BitBucket services.
+		</div>
+	</div>
+	<div class="form-group" style="padding-top:15px;">
+		<div class="col-md-12">
+			<textarea rows="5" class="form-control" readonly="readonly">{{current_user.keypair.public}}</textarea>
+		</div>
+	</div>
+	<div class="form-group" style="padding-top:15px;">
+		<div class="col-md-3">
+			<button type="submit" class="btn btn-success" {% if current_user.keypair.public %}onclick="return regenerate();"{% endif %}
+				title="{% if current_user.keypair.public %}Re-g{% else %}G{% endif %}enerate your deploy key">
+				{% if current_user.api_key %}Re-g{% else %}G{% endif %}enerate
+			</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		function regenerate() {
+			bootbox.confirm("WARNING: Re-generating deploy key will automatically update it in your GitHub/BitBucket accounts." +
+					"<br/><br/>Do you wish to continue?", function(result) {
+					if (result) {
+						$("form").submit();
+					}
+				});
+			return false;
+		}
+	</script>
+{% endblock %}

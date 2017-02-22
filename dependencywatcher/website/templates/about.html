@@ -1,0 +1,22 @@
+{% extends "layout/landing.html" %}
+
+{% block title %}About{% endblock %}
+{% block description %}About DependencyWatcher service{% endblock %}
+
+{% block content %}
+<div class="content text-wrapper">
+	<article class="container text-content">
+		<h1>About</h1>
+
+		<p>DependencyWatcher, an integral assistant of your software development process.</p>
+
+		<p>This service tracks third-party components (Open Source frameworks, libraries, etc.) used in your software projects, and alerts you immediately when new versions of these components are released. Many programming languages and toolkits are supported out of the box, and can be ingested by the DependencyWatcher service.</p>
+
+		<p>Advanced features of DependencyWatcher service include: alerting on any suspicious software license usage, suggesting software components alternatives, recommending when source code could be written in a more time or cost effective way.</p>
+
+		<p>Integration with DependencyWatcher service is simple: just connect your BitBucket or GitHub accounts, and import your repositories. Alternatively, you can upload your entire project source code, or use advanced integration methods such as Maven.</p>
+
+		<p>DependencyWatcher is <a href="//github.com/DependencyWatcher">backed</a> by the Open Source community.</p>
+	</article>
+</div>
+{% endblock %}

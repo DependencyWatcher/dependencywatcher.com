@@ -1,0 +1,69 @@
+{% extends "layout/base.html" %}
+
+{% block head %}
+	<link href="/static/css/landing.min.css?v20150926-0633" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+<div id="navigation" class="navbar navbar-default navbar-static-top" role="navigation">
+	<div class="container">
+		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<div class="navbar-header">
+			<a href="/" class="navbar-brand">DependencyWatcher</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav navbar-right">
+				{% if current_user.is_authenticated %}
+					<li><a href="{{ url_for('logout') }}?next={{ request.path }}">
+						{% if current_user.image %}
+							<img style="border-radius:4px;vertical-align:bottom;" height="24" width="24"
+								src="data:image/{{current_user.image.thumbnail.format.lower()}};base64,{{current_user.image.thumbnail.read().encode("base64").replace("\n","")}}">&nbsp;
+						{% endif %}
+						Log out</a>
+					</li>
+				{% else %}
+					<li {% if request.path==url_for('signup') %}class="active"{% endif %}>
+						<a id="signin-btn" href="{{ url_for('signup') }}">Sign Up</a>
+					</li>
+					<li {% if request.path==url_for('login') %}class="active"{% endif %}>
+						<a href="{{ url_for('login') }}?next={{ request.path }}">Log in</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block body %}
+	<script type="text/javascript" src="/static/js/landing.min.js?v20150302-1816"></script>
+	<div id="scroll-to-top" style="display:none;"><i class="fa fa-arrow-up fa-2x"></i></div>
+{% endblock %}
+
+{% block footer %}
+<footer>
+	<div class="footer-logo">
+		<div class="footer-logo-img"></div>
+	</div>
+	<div class="container">
+		<ul class="list-inline">
+			<li><a href="{{ url_for('about') }}" title="About this service">About</a></li>
+			<li><a href="{{ url_for('pricing') }}" title="Pricing &amp; plans">Pricing</a></li>
+			<li><a href="https://dependencywatcher.com/blog" title="Read our blog">Blog</a></li>
+			<li><a href="mailto:webmaster@dependencywatcher.com" title="Contact us via e-mail">Contact</a></li>
+			<li><a href="https://github.com/DependencyWatcher" title="Fork us on GitHub">GitHub</a></li>
+			<li><a href="https://twitter.com/dependencywatch" title="Follow us on Twitter"><i class="fa fa-twitter" style="color:#55acee"></i></a></li>
+		</div>
+		<ul class="list-inline">
+			<li><span class="copyright">&copy; 2015 DependencyWatcher</span></li>
+			<li><a href="{{ url_for('terms') }}" title="Terms and conditions">Terms of Service</a></li>
+			<li><a href="{{ url_for('privacy') }}" title="Privacy policy">Privacy Policy</a></li>
+		</div>
+	</div>
+</footer>
+{% endblock %}
+

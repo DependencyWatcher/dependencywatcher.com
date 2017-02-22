@@ -1,0 +1,29 @@
+{% extends "layout/profile.html" %}
+
+{% block profilecontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-star-o"></i>&nbsp;&nbsp;Current Plan</h5>
+	<div class="form-group" style="padding-top:20px;">
+		<div class="col-md-9">
+			<input type="text" class="form-control" disabled value="{{plan.to_name()}}"></input>
+		</div>
+	</div>
+	<div class="form-group" style="color:#888;">
+		<div style="padding-top:20px;padding-left:15px;">
+			Your current plan usage:
+		</div>
+		<ul style="padding-top:10px;list-style-type:none;">
+			<li>{{plan.get_public_usage(current_user)}} of {{plan.max_public_repos}} public respositories</li>
+			<li>{{plan.get_private_usage(current_user)}} of {{plan.max_private_repos}} private respositories</li>
+		</ul>
+	</div>
+	{% if plan.type != Plan.ENTERPRISE %}
+		<div class="form-group" style="padding-top:15px;">
+			<div class="col-md-3">
+				<a href="{{url_for("upgrade_plan")}}" class="btn btn-success" title="Upgrade your current plan">Upgrade</a>
+			</div>
+		</div>
+	{% endif %}
+</div>
+{% endblock %}
+

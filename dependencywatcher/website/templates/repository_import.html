@@ -1,0 +1,166 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Import Repository{% endblock %}
+{% block description %}The form on this page can be used for importing remote repositories using SVN or Git{% endblock %}
+
+{% macro source_form(id, name) -%}
+	<div id="{{id}}" class="source-form">
+		<div class="form-group {% if form.url.errors %}has-error{% endif %}">
+			<label class="col-md-3 control-label required" for="url">URL</label>
+			<div class="col-md-9">
+				<input type="text" placeholder="{{name}} repository URL" class="form-control"
+					name="url" required value="{{ form.url.data if form.url.data }}" />
+			</div>
+		</div>
+		<div class="form-group {% if form.auth_type.errors %}has-error{% endif %}">
+			<label class="col-md-3 control-label" for="type">Authentication</label>
+			<div class="col-md-9">
+				<select class="form-control auth-type-select" name="auth_type">
+					<option value="{{Repository.AUTH_NONE}}" {%if not form.auth_type.data or form.auth_type.data == Repository.AUTH_NONE|string() %}selected{% endif %}>None</option>
+					<option value="{{Repository.AUTH_CREDENTIALS}}" {%if form.auth_type.data == Repository.AUTH_CREDENTIALS|string() %}selected{% endif %}>Password</option>
+					<option value="{{Repository.AUTH_PRIVATE_KEY}}" {%if form.auth_type.data == Repository.AUTH_PRIVATE_KEY|string() %}selected{% endif %}>SSH Private Key</option>
+				</select>
+			</div>
+		</div>
+		<div class="auth-block auth-{{Repository.AUTH_PRIVATE_KEY}} hidden">
+			<div class="form-group {% if form.ssh_key.errors %}has-error{% endif %}">
+				<label class="col-md-3 control-label required" for="ssh_key">SSH Key</label>
+				<div class="col-md-9">
+					<textarea placeholder="Paste SSH private key here ..." class="form-control"
+						name="ssh_key" required rows="3">{{ form.ssh_key.data if form.ssh_key.data }}</textarea>
+				</div>
+			</div>
+		</div>
+		<div class="auth-block auth-{{Repository.AUTH_CREDENTIALS}} hidden">
+			<div class="form-group {% if form.username.errors %}has-error{% endif %}">
+				<label class="col-md-3 control-label required" for="username">Username</label>
+				<div class="col-md-9">
+					<input type="text" placeholder="{{name}} username" class="form-control"
+						name="username" required value="{{ form.username.data if form.username.data }}"/>
+				</div>
+			</div>
+			<div class="form-group {% if form.password.errors %}has-error{% endif %}">
+				<label class="col-md-3 control-label required" for="password">Password</label>
+				<div class="col-md-9">
+					<input type="password" placeholder="{{name}} password" class="form-control" name="password" required />
+				</div>
+			</div>
+		</div>
+	</div>
+{%- endmacro %}
+
+{% block content %}
+<div class="container voffset-2 bottom-offset" role="main">
+	<div class="panel panel-default">
+		<div class="panel-body" style="padding: 15px 25px 70px;">
+			<div class="page-header" style="padding:0px 25px 15px 25px;">
+				<h1>Import Existing Repository</h1>
+			</div>
+
+			<!-- Left pane -->
+			<div class="col-md-6 divider-vertical-r">
+
+				{% include "layout/alerts.html" %}
+
+				<form class="form-horizontal" role="form" method="POST">
+					{{ form.csrf_token if form }}
+					<div class="form-group {% if form.type.errors %}has-error{% endif %}">
+						<label class="col-md-3 control-label" for="type">Source</label>
+						<div class="col-md-9">
+							<select id="source" class="form-control" name="type">
+								<option value="{{Repository.GIT}}" {%if form.type.data == Repository.GIT|string() %}selected{% endif %}>Git</option>
+								<option value="{{Repository.SVN}}" {%if form.type.data == Repository.SVN|string() %}selected{% endif %}>SVN</option>
+								<option value="{{Repository.MERCURIAL}}" {%if form.type.data == Repository.MERCURIAL|string() %}selected{% endif %}>Mercurial</option>
+							</select>
+						</div>
+					</div>
+
+					{{ source_form(Repository.GIT ~ "-form", "Git") }}
+					{{ source_form(Repository.SVN ~ "-form", "SVN") }}
+					{{ source_form(Repository.MERCURIAL ~ "-form", "Mercurial") }}
+
+					<div class="form-group voffset-1">
+						<div class="col-md-offset-3 col-md-9">
+							<div class="pull-right">
+								<button type="submit" class="btn btn-success">Import</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<!-- Right pane -->
+			<div class="col-md-5" style="padding-left:35px;">
+				{% if config().github_enabled %}
+					<a class="btn btn-default btn-lg" style="width:100%;" data-toggle="tooltip" data-placement="top"
+						title="Click to allow access to your GitHub account for importing an existing repository from there"
+						href="{{url_for("github_import")}}">
+						<span class="fa fa-github fa-3x" style="vertical-align:middle;"></span>&nbsp;&nbsp;Import from GitHub
+					</a>
+				{% endif %}
+				{% if config().bitbucket_enabled %}
+					<a class="btn btn-default btn-lg" style="width:100%; margin-top:15px;" data-toggle="tooltip" data-placement="right"
+						title="Click to allow access to your BitBucket account for importing an existing repository from there"
+						href="{{url_for("bitbucket_import")}}">
+						<span class="fa fa-bitbucket fa-3x" style="vertical-align:middle;"></span>&nbsp;&nbsp;Import from BitBucket
+					</a>
+				{% endif %}
+				<a class="btn btn-default btn-lg" style="width:100%; margin-top:15px;" data-toggle="tooltip" data-placement="bottom"
+					title="Upload an archive containing your project source code"
+					href="{{url_for("repository_upload")}}">
+					<span class="fa fa-cloud-upload fa-3x" style="vertical-align:middle;"></span>&nbsp;&nbsp;Upload local project
+				</a>
+
+				<p style="padding-top:40px;">Alternatively, <a href="{{ url_for("help_integration") }}">integrate</a> with your
+					project build process.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		function updateInputElements() {
+			$("input, select, textarea").each(function() {
+				if ($(this).closest(".hidden").length) {
+					$(this).attr("disabled", "disabled");
+				} else {
+					$(this).removeAttr("disabled");
+				}
+			});
+		}
+
+		$("#source").change(function() {
+			var type = $(this).val();
+			$(".source-form").addClass("hidden");
+			$("#" + type + "-form").removeClass("hidden").find("option[value='credentials']").each(function() {
+				if (type == {{Repository.GIT}} || type == {{Repository.MERCURIAL}}) {
+					$(this).attr("disabled", "");
+				} else {
+					$(this).removeAttr("disabled");
+				}
+			});
+			$(".auth-type-select").change();
+		});
+
+		$(".auth-type-select").change(function() {
+			var authType = $(this).val();
+			$(this).closest(".source-form").find(".auth-block").each(function() {
+				if ($(this).hasClass("auth-" + authType)) {
+					$(this).removeClass("hidden");
+				} else {
+					$(this).addClass("hidden");
+				}
+			});
+			updateInputElements();
+		});
+
+		$("#source").change();
+	</script>
+{% endblock %}
+

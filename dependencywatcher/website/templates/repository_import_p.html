@@ -1,0 +1,28 @@
+{% extends "layout/task.html" %}
+
+{% block title %}Import Repository{% endblock %}
+{% block description %}Importing remote repository progress{% endblock %}
+
+{% block taskicon %}<i class="fa fa-bookmark-o"></i>&nbsp;&nbsp;{% endblock %}
+
+{% block panelbody %}
+	<p class="pull-right">
+		<a id="proceed-btn" class="btn btn-success" href="{{url_for("dashboard")}}" disabled>Close</a>
+	</p>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		function onRefresh(data) {
+			var finished = true;
+			for (var i = 0; i < data.length && finished; ++i) {
+				finished &= (data[i].state == "SUCCESS" || data[i].state == "FAILURE");
+			}
+			if (finished) {
+				$("#proceed-btn").removeAttr("disabled");
+			}
+		}
+	</script>
+{% endblock %}

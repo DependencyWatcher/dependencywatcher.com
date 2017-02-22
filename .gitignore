@@ -1,0 +1,5 @@
+*.pyc
+*.egg-info
+celerybeat-schedule
+dependencywatcher/parser
+dependencywatcher/crawler

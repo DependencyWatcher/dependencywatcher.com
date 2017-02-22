@@ -1,0 +1,69 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Maven Integration{% endblock %}
+{% block description %}This page describes how to integrate DependencyWatcher with Maven{% endblock %}
+
+{% block head %}
+	{{ super() }}
+	<script type="text/javascript" src="//cdn.jsdelivr.net/highlight.js/8.8.0/highlight.min.js"></script>
+	<link href="//cdn.jsdelivr.net/highlight.js/8.8.0/styles/github.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="container voffset-2 bottom-offset" role="main">
+	<div class="panel panel-default col-md-10 col-md-offset-1">
+		<div class="panel-body" style="padding: 15px 25px 70px;">
+			<div class="page-header" style="padding:0px 25px 15px 25px;">
+				<h1>Maven Integration</h1>
+			</div>
+
+			<p>DependencyWatcher Maven plug-in helps integrate Maven based projects with the service.
+				To use this plug-in you must obtain your <a href="{{ url_for("profile_api_key") }}">API Key</a> first.</p>
+
+			<br/>
+			<h5>Uploading Project</h5>
+			<p>To upload or update project on DependencyWatcher during build, include the following
+				into your project's pom.xml file:</p>
+
+			<pre style="border:0;background:#fff;border-radius:0;padding:0;">
+				<code class="xml" style="border:1px solid #ddd;border-radius:0;margin:0;padding:3px 15px;background:#fff;">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;com.dependencywatcher&lt;/groupId&gt;
+            &lt;artifactId&gt;dependencywatcher-maven-plugin&lt;/artifactId&gt;
+            &lt;configuration&gt;
+                &lt;apiKey&gt;{{ current_user.api_key or "Your API key here" }}&lt;/apiKey&gt;
+            &lt;/configuration&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;phase&gt;compile&lt;/phase&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;update&lt;/goal&gt;
+                    &lt;/goals&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code>
+			</pre>
+
+			<h5>Error Handling</h5>
+			<p>Running Maven with <code>-e</code> switch will help find the root cause of a build problem. Common issues are:</p>
+			<ul>
+				<li>Wrong API Key</li>
+				<li>Plan limits are exceeded</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		hljs.initHighlightingOnLoad();
+	</script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "layout/landing.html" %}
+
+{% block title %}Pricing &amp; Plans{% endblock %}
+{% block description %}Pricing and plans of the DependencyWatcher service{% endblock %}
+
+{% block content %}
+<div class="content text-wrapper pricing-content">
+	<div class="container">
+		{% set plan_dev = Plan.by_type(Plan.DEVELOPER) %}
+		{% set plan_com = Plan.by_type(Plan.COMPANY) %}
+		{% set plan_ent = Plan.by_type(Plan.ENTERPRISE) %}
+		<div class="col-md-12 text-center"><h3>Pricing &amp; Plans</h3></div>
+
+		<div class="pricing-section">
+			<div class="col-md-4 panel">
+				<div class="panel-heading text-center"><h4>Developer</h4></div>
+				<div class="panel-body">
+					<p class="lead text-center"><strong>Free</strong></p>
+					<ul>
+						<li><i class="fa fa-check"></i>&nbsp;&nbsp;{{plan_dev.max_public_repos}} public repositories</li>
+						<li><i class="fa fa-check"></i>&nbsp;&nbsp;{{plan_dev.max_private_repos}} private repository</li>
+					</ul>
+					<p><a class="btn btn-lg btn-block btn-success" href="{{url_for("signup")}}?plan={{plan_dev.type}}">Signup</a></p>
+				</div>
+			</div>
+			<div class="col-md-4 panel selected">
+				<div class="panel-heading text-center"><h4>Company</h4></div>
+				<div class="panel-body">
+					<p class="lead text-center"><strong>${{plan_com.monthly_price}} / Month</strong></p>
+					<ul>
+						<li><i class="fa fa-check"></i>&nbsp;&nbsp;{{plan_com.max_public_repos}} public repositories</li>
+						<li><i class="fa fa-check"></i>&nbsp;&nbsp;{{plan_com.max_private_repos}} private repositories</li>
+					</ul>
+					<p><a class="btn btn-lg btn-block btn-success" href="{{url_for("signup")}}?plan={{plan_com.type}}">Signup</a></p>
+				</div>
+			</div>
+			<div class="col-md-4 panel">
+				<div class="panel-heading text-center"><h4>Enterprise</h4></div>
+				<div class="panel-body">
+					<p class="lead text-center"><strong>${{plan_ent.monthly_price}} / Month</strong></p>
+					<ul>
+						<li><i class="fa fa-check"></i>&nbsp;&nbsp;{{plan_ent.max_public_repos}} public repositories</li>
+						<li><i class="fa fa-check"></i>&nbsp;&nbsp;{{plan_ent.max_private_repos}} private repositories</li>
+					</ul>
+					<p><a class="btn btn-lg btn-block btn-success" href="{{url_for("signup")}}?plan={{plan_ent.type}}">Signup</a></p>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-12 text-center" style="padding-top:40px;">
+			For the on-premise deployment option, please contact <a href="mailto:sales@dependencywatcher.com">sales@dependencywatcher.com</a>
+		</div>
+	</div>
+</div>
+{% endblock %}

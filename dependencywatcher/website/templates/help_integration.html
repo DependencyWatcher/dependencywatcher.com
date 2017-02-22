@@ -1,0 +1,32 @@
+{% extends "layout/admin.html" %}
+
+{% block title %}Integration Methods{% endblock %}
+{% block description %}This page describes different integration methods with DependencyWatcher service{% endblock %}
+
+{% block content %}
+<div class="container voffset-2 bottom-offset" role="main">
+	<div class="panel panel-default col-md-10 col-md-offset-1">
+		<div class="panel-body" style="padding: 15px 25px 70px;">
+			<div class="page-header" style="padding:0px 25px 15px 25px;">
+				<h1><i class="fa fa-puzzle-piece fa-2x" style="vertical-align:middle;"></i>&nbsp;&nbsp;&nbsp;Integration Methods</h1>
+			</div>
+
+			<p>Integration with DependencyWatcher service helps discover your project dependencies, and get important alerts on time
+				during project build process. Below are some existing integration methods.</p>
+
+			<p>Please note that in order to use any of the following methods you must obtain your <a href="{{ url_for("profile_api_key") }}">API Key</a> first.</p>
+
+			<br/>
+			<ul>
+				<li><h5><a href="{{ url_for("help_integration_shell") }}">Shell Script</a></h5></li>
+				<li><h5><a href="{{ url_for("help_integration_maven") }}">Maven Plug-In</a></h5></li>
+			</ul>
+
+			<br/>
+			<p>You can help us <a href="https://github.com/DependencyWatcher">develop</a> integrations with another toolkits as well!</p>
+		</div>
+	</div>
+</div>
+
+{{ super() }}
+{% endblock %}

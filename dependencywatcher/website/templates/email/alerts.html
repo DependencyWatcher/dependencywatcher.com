@@ -1,0 +1,34 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+	{% for a in alerts %}
+		{% set url = a.reference.dependency.url if a.reference.dependency.url else feeling_lucky_url(a.reference.dependency.name) %}
+		<div style="padding:20px 15px;{% if not loop.last %}border-bottom:3px dashed #ddd;{% endif %}">
+			{% if a.type == a.NEW_VERSION %}
+				<p><a style="color:#3b73af;text-decoration:none;"
+					href="{{ url }}" target="_blank">{{ a.reference.dependency.name }}</a>
+				used in <a style="color:#3b73af;text-decoration:none;"
+					href="{{ config().site_url }}/repository/{{encodeURIComponent(a.reference.repository.url)}}"
+					title="View repository">{{a.reference.repository.url}}</a> is outdated.</p>
+				<p>New
+				{% if a.release_type == Version.REL_MAJOR %}major{% endif %}
+				{% if a.release_type == Version.REL_MINOR %}minor{% endif %}
+				{% if a.release_type == Version.REL_BUGFIX %}bugfix{% endif %}
+				version is: <b>{{ a.reference.version }}</b>.<p>
+			{% elif a.type == a.NEW_LICENSE %}
+				<p>License of <a style="color:#3b73af;text-decoration:none;"
+					href="{{ url }}" target="_blank">{{ a.reference.dependency.name }}</a>
+				used in <a style="color:#3b73af;text-decoration:none;"
+					href="{{ config().site_url }}/repository/{{encodeURIComponent(a.reference.repository.url)}}"
+					title="View repository">{{a.reference.repository.url}}</a> was upgraded.</p>
+				<p>It is now licensed under <b>{{ a.reference.dependency.license.normalized }}</b>.</p>
+			{% endif %}
+		</div>
+	{% endfor %}
+
+	{{ button(config().site_url ~ "/dashboard/alerts", "View All Alerts") }}
+{% endblock %}
+
+{% block afterfooter %}
+	<p><a style="color:#3b73af;" href="{{ config().site_url }}/profile/alerts">Unsubscribe</a> from alerts.</a></p>
+{% endblock %}

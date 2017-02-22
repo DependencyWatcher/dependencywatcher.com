@@ -1,0 +1,50 @@
+{% extends "layout/profile.html" %}
+
+{% block profilecontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-key"></i>&nbsp;&nbsp;API Key</h5>
+	<div class="form-group" style="padding-top:20px;">
+		<div class="col-md-12">
+			This key is the way to authorize yourself when calling DependencyWatcher's API.
+		</div>
+	</div>
+	<div class="form-group" style="padding-top:15px;">
+		<div class="col-md-12">
+			<input class="form-control" readonly="readonly" value="{{current_user.api_key}}" />
+		</div>
+	</div>
+	<div class="form-group" style="padding-top:15px;">
+		<div class="col-md-3">
+			<button type="submit" class="btn btn-success" {% if current_user.api_key %}onclick="return regenerate();"{% endif %}
+				title="{% if current_user.api_key %}Re-g{% else %}G{% endif %}enerate your API key">
+				{% if current_user.api_key %}Re-g{% else %}G{% endif %}enerate
+			</button>
+		</div>
+	</div>
+	{% if current_user.api_key %}
+	<div class="form-group" style="padding-top:20px;">
+		<div class="col-md-12">
+			To use the API, add the following HTTP header to every request:
+		</div>
+		<div class="col-md-12" style="padding:20px 30px;font-style:italic;">
+			Authorization: apikey={{current_user.api_key}}
+		</div>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+	<script type="text/javascript">
+		function regenerate() {
+			bootbox.confirm("WARNING: Re-generating API keys will require updating all of your " +
+					"clients that use DependencyWatcher API.<br/><br/>Do you wish to continue?", function(result) {
+					if (result) {
+						$("form").submit();
+					}
+				});
+			return false;
+		}
+	</script>
+{% endblock %}

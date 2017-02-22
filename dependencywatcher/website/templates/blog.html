@@ -1,0 +1,57 @@
+{% extends "layout/landing.html" %}
+
+{% block title %}{{ title if title else "Blog" }}{% endblock %}
+{% block description %}DependencyWatcher blog is about tracking dependencies in the Open Source world{% endblock %}
+
+{% block content %}
+<div class="content text-wrapper">
+	<div class="container text-content">
+		{% for post in posts %}
+			<article class="blog-post">
+				<h1><a href="{{ url_for("blog_post_by_slug", slug=post.slug) }}">{{post.title}}</a></h1>
+				<p class="hidden">{{post.content}}</p>
+				<div class="blog-post-footer">
+					<div style="padding:15px 0px;">
+						{% for tag in post.tags %}
+							<span class="blog-post-tag"><a href="{{url_for("blog_by_tag", tag=tag.name)}}">#{{tag.name}}</a></span>
+						{% endfor %}
+					</div>
+					<div class="blog-post-date">
+						Posted on <span>{{post.date}}</span> by <a href="javascript:void(0);">{{ post.author.split('@')[0] }}</a>
+						{% if post.author == current_user.email %}
+							&nbsp;<a class="btn btn-default btn-xs" href="{{url_for("blog_post_edit", id=post.id)}}?next={{ request.path }}"><i class="fa fa-edit"> Edit</i></a>
+						{% endif %}
+					</div>
+				</div> 
+			</article>
+		{% endfor %}
+
+		<div class="blog-buttons">
+		{% if posts.has_prev %}
+			<a class="btn btn-info" href="{{ url_for("blog", page=posts.page-1) }}"><i class="fa fa-angle-double-left"></i> Newer posts</a>
+		{% endif %}
+		{% if posts.has_next %}
+			<a class="btn btn-info" href="{{ url_for("blog", page=posts.page+1) }}">Older posts <i class="fa fa-angle-double-right"></i></a>
+		{% endif %}
+		{% if current_user.is_authenticated and current_user.has_roles("editor") %}
+			<span class="pull-right"><a class="btn btn-info" href="{{ url_for("blog_post") }}">New post</a></span>
+		{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Converter.js"></script>
+	<script type="text/javascript">
+		$(".blog-post-date>span").each(function() {
+			$(this).text(moment.utc($(this).text()).format('LL'));
+		});
+		var converter = new Markdown.Converter();
+		$(".blog-post>p").each(function() {
+			$(this).html(converter.makeHtml($(this).text())).removeClass("hidden");
+		});
+	</script>
+{% endblock %}

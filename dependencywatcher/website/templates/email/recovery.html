@@ -1,0 +1,8 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+	<p>Dear {{ user.get_name() }},</p>
+	<p>To reset your password please click on the button below.</p>
+	{{ button(request.url_root ~ "password/recovery/" ~ user.recovery_code, "Reset Your Password") }}
+	<p>You can ignore this message if you didn't issue this password recovery process.</p>
+{% endblock %}

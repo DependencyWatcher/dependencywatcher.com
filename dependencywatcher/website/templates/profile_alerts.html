@@ -1,0 +1,40 @@
+{% extends "layout/profile.html" %}
+
+{% block profilecontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<h5><i class="fa fa-envelope-o"></i>&nbsp;&nbsp;Email Notifications</h5>
+	<div class="form-group" style="padding-top:20px;">
+		<div class="col-md-8">New version updates</div>
+		<div class="col-md-4 btn-group btn-toggle"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox">OFF</button>
+		</div>
+		<input type="checkbox" name="alerts_NV" class="hidden" {% if current_user.settings.alerts_NV %}checked{% endif %} />
+	</div>
+	<div class="form-group">
+		<div class="col-md-8">Alert on unstable versions</div>
+		<div class="col-md-4 btn-group btn-toggle"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox">OFF</button>
+		</div>
+		<input type="checkbox" name="unstable_vers" class="hidden" {% if current_user.settings.unstable_vers %}checked{% endif %} />
+	</div>
+	<div class="form-group">
+		<div class="col-md-8">Licensing updates</div>
+		<div class="col-md-4 btn-group btn-toggle"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox">OFF</button>
+		</div>
+		<input type="checkbox" name="alerts_NL" class="hidden" {% if current_user.settings.alerts_NL %}checked{% endif %} />
+	</div>
+	<div class="form-group">
+		<div class="col-md-8">Send weekly report</div>
+		<div class="col-md-4 btn-group btn-toggle"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox">OFF</button>
+		</div>
+		<input type="checkbox" name="weekly" class="hidden" {% if current_user.settings.weekly %}checked{% endif %} />
+	</div>
+</div>
+{% endblock %}
+

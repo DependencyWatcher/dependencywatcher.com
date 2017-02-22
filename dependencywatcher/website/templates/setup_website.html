@@ -1,0 +1,40 @@
+{% extends "layout/setup.html" %}
+
+{% block setupcontent %}
+<div class="col-md-10 col-lg-9" style="padding-left:25px;">
+	<div class="form-group {% if form.site_url.errors %}has-error{% endif %}">
+		<label class="col-md-5 required control-label" for="site_url">Website URL</label>
+		<div class="col-md-7">
+			<input class="form-control" name="site_url" type="url" required
+				data-toggle="tooltip" data-placement="right"
+				title="Website URL prefix for remote access"
+				value="{{ form.site_url.data or config().site_url or "" }}"></input>
+		</div>
+	</div>
+	<div class="form-group {% if form.workdir.errors %}has-error{% endif %}">
+		<label class="col-md-5 required control-label" for="workdir">Working Directory</label>
+		<div class="col-md-7">
+			<input class="form-control" name="workdir" type="text" required
+				data-toggle="tooltip" data-placement="right"
+				title="Working directory for storing user repositories"
+				value="{{ form.workdir.data or config().workdir or "" }}"></input>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-md-5 control-label" for="request_activation">Require Account Activation</label>
+		<div class="col-md-7 btn-group btn-toggle" style="padding-top:5px;padding-bottom:5px;"> 
+			<button class="btn btn-xs btn-primary active btn-checkbox" onclick="return false;">ON</button>
+			<button class="btn btn-xs btn-default btn-checkbox" onclick="return false;">OFF</button>
+		</div>
+		<input type="checkbox" name="request_activation" class="hidden" {% if config().request_activation %}checked{% endif %} />
+	</div>
+	<div class="form-group">
+		<div class="col-md-offset-5 col-md-7">
+			<div style="margin-top:10px;">
+				<button type="submit" class="btn btn-success">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+

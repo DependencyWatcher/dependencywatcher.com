@@ -1,0 +1,64 @@
+{% extends "layout/dashboard.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+	{{ super() }}
+	<script type="text/javascript" src="//cdn.jsdelivr.net/highlight.js/8.8.0/highlight.min.js"></script>
+        <link href="//cdn.jsdelivr.net/highlight.js/8.8.0/styles/github.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block navitem %}
+	<li class="active"><a href="javascript:void(0);" title="{{ file }}">{{ title }}</a></li>
+{% endblock %}
+
+{% block pagecontent %}
+	{% include "layout/alerts.html" %}
+	{% if content %}
+		<h4 class="reference-title">{{ file }}</h4>
+		<pre class="reference-pre">
+			<code id="code" class="reference-code code">{{ content }}</code>
+		</pre>
+	{% endif %}
+{% endblock %}
+
+{% block body %}
+	{{ super() }}
+
+	<script type="text/javascript">
+		$(function() {
+			$(".close").click(function() {
+				document.location.href = "/dashboard/alerts"
+				return false;
+			});
+
+			var code = document.getElementById("code");
+			hljs.highlightBlock(code);
+
+			{% if line %}
+			// Highlight the line, and scroll the page to it:
+			var textNodes = [];
+			var currentLine = 1;
+			for (var node = code.firstChild; node != null && currentLine <= {{ line }}; node = node.nextSibling) {
+				var $node = $(node);
+				var text = $node.text();
+				if (currentLine == {{ line }}) {
+					if (text.indexOf('\n') === -1 && node.nodeType === 3) {
+						if (text.trim().length > 0) {
+							textNodes.push($node);
+						}
+					} else {
+						$node.addClass("highlighted");
+					}
+				}
+				currentLine += (text.match(/\n/g) || []).length;
+			}
+			$(textNodes).each(function() {
+				$("<span>").addClass("highlighted").text($(this).text()).insertBefore($(this));
+				$(this).remove();
+			});
+			$("html, body").animate({ scrollTop: $(".highlighted").first().offset().top - 200 });
+			{% endif %}
+		});
+	</script>
+{% endblock %}
